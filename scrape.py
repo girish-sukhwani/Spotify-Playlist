@@ -14,10 +14,11 @@ def find_songs(artist):
 
   try:
     request_obj = get_request(artist)
+    divs_list = get_divs(request_obj)
   except AssertionError as err:
     print(err)
 
-  print(request_obj)
+  print(divs_list)
   return []
 
 
@@ -47,3 +48,29 @@ def get_request(artist):
   assert (req.ok == True), 'Failed Request!!!'
 
   return req
+
+
+def get_divs(req_obj):
+  '''Performs web scraping on the web page retrieved
+     to retrieve details of all the events related 
+     to the artist.
+
+  Args:
+    req_obj (HTTP Response): An HTTP Response object.
+
+  Returns:
+    A list of div tags representing recent events
+    related to the artists.
+
+  Raises:
+    AssertionError: If there are no events.
+  '''
+
+  from bs4 import BeautifulSoup
+
+  soup = BeautifulSoup(req_obj.text, 'html.parser')
+  div_attrs = {'class': 'col-xs-12 setlistPreview'}
+  div_tags = soup.find_all('div', attrs=div_attrs)
+  assert div_tags, 'Failed to find events!!!'
+
+  return div_tags

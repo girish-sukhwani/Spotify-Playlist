@@ -1,3 +1,6 @@
+_base_url = 'http://www.setlist.fm/'
+
+
 def find_songs(artist):
   '''Requests user input for the artist's name
      and returns a list of songs from one of the
@@ -10,26 +13,49 @@ def find_songs(artist):
   Returns:
     A list of strings containing the names of
     the songs of the artist's latest setlist.
+
+  Raises:
+    AssertionError: If a request fails.
+    AssertionError: If there are no events.
+    AssertionError: If there are no non-empty setlists.
   '''
 
   try:
-    request_obj = get_request(artist)
-    divs_list = get_divs(request_obj)
-    setlist_link = get_link(divs_list)
+    artist_url = _get_artist_query_link(artist)
+    artist_req = _get_request(artist_url)
+    divs_list = _get_divs(artist_req)
+    setlist_link = _get_link(divs_list)
+    setlist_req = _get_request(setlist_link)
   except AssertionError as err:
-    print(err)
+    raise err
 
-  print(setlist_link)
-  return []
+  return _get_songs(setlist_req)
 
 
-def get_request(artist):
-  '''Sends HTTP GET request to the setlist.fm URL and
-     returns the HTTP response object.
+def _get_artist_query_link(artist):
+  '''Constructs the query URL for the given artist.
 
   Args:
     artist (string): A string containing the name
-           of a musician or a band.
+           of a musician or band.
+
+  Returns:
+    A string containing the URL with the artist
+    query string.
+  '''
+
+  artist_query = '+'.join(artist.split(' '))
+  url = '{}search?query={}'.format(_base_url,
+                                   artist_query)
+  return url
+
+
+def _get_request(url):
+  '''Sends HTTP GET request to the setlist.fm URL
+     and returns the HTTP response object.
+
+  Args:
+    url (string): A string containing the URL.
 
   Returns:
     An HTTP Response object.
@@ -40,20 +66,15 @@ def get_request(artist):
 
   from requests import get as get_req
 
-  base_url = 'http://www.setlist.fm/'
-  artist_query = '+'.join(artist.split(' '))
-  url = '{}search?query={}'.format(base_url,
-                                   artist_query)
-
   req = get_req(url)
   assert (req.ok == True), 'ERROR: Failed Request!!!'
 
   return req
 
 
-def get_divs(req_obj):
+def _get_divs(req_obj):
   '''Performs web scraping on the web page retrieved
-     to retrieve details of all the events related 
+     to retrieve details of all the events related
      to the artist.
 
   Args:
@@ -77,7 +98,7 @@ def get_divs(req_obj):
   return div_tags
 
 
-def get_link(divs):
+def _get_link(divs):
   '''Retrieves a URL to the non-empty setlist of
      the latest event.
 
@@ -96,6 +117,25 @@ def get_link(divs):
   ol_attr = {'class': 'list-inline'}
   for div in divs:
     if div.find('ol', attrs=ol_attr):
-      return div.a['href']
+      return _base_url + div.a['href']
 
   assert None, 'ERROR: Failed to find non-empty setlists!!!'
+
+
+def _get_songs(req_obj):
+  '''Retrieves a list of song names from the setlist webpage.
+
+  Args:
+    req_obj (HTTP Response): An HTTP Response object.
+
+  Returns:
+    A list of strings containing the names of the songs.
+  '''
+
+  from bs4 import BeautifulSoup
+
+  soup = BeautifulSoup(req_obj.text, 'html.parser')
+  songs_attr = {'class': 'songLabel'}
+  setlist = soup.find_all('a', attrs=songs_attr)
+
+  return [song.text for song in setlist]

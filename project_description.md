@@ -1,11 +1,14 @@
 # Spotify-Playlist
 Building a Python app that creates a playlist on Spotify, featuring an artist's latest setlist
 
+
 ## Project Overview
 In this project, we will use Web Scraping to extract an artist's setlist from one of the recent events and create a Spotify playlist using **spotipy**, a Python API package developed for Spotify, to build a playlist.
 
+
 ## Project Highlights
 This project is designed to give a hands-on experience with Web Scraping and handling API communication using Python.
+
 
 ## Description
 This project is divided into 3 separate modules that will call each other when necessary. The description of all the modules is as given below.
@@ -30,6 +33,7 @@ This project uses the following softwares and Python libraries:
 - and so on...
 
 If you do not have Python installed yet, it is highly recommended that you install the [Anaconda](https://www.anaconda.com/download/) distribution of Python, which already has the above packages and more included. Make sure you select the Python 3.x installer and not the Python 2.7 installer.
+
 
 ## Running the Project
 To successfully run the app and create a playlist, use the following command and enter all the requested details correctly:

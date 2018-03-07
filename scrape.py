@@ -1,7 +1,7 @@
 def find_songs(artist):
-  '''Requests user input for the artist's name 
-     and returns a list of songs from one of 
-     the artist's recent setlist.
+  '''Requests user input for the artist's name
+     and returns a list of songs from one of the
+     artist's recent setlist.
 
   Args:
     artist (string): A string containing the
@@ -15,10 +15,11 @@ def find_songs(artist):
   try:
     request_obj = get_request(artist)
     divs_list = get_divs(request_obj)
+    setlist_link = get_link(divs_list)
   except AssertionError as err:
     print(err)
 
-  print(divs_list)
+  print(setlist_link)
   return []
 
 
@@ -45,7 +46,7 @@ def get_request(artist):
                                    artist_query)
 
   req = get_req(url)
-  assert (req.ok == True), 'Failed Request!!!'
+  assert (req.ok == True), 'ERROR: Failed Request!!!'
 
   return req
 
@@ -71,6 +72,30 @@ def get_divs(req_obj):
   soup = BeautifulSoup(req_obj.text, 'html.parser')
   div_attrs = {'class': 'col-xs-12 setlistPreview'}
   div_tags = soup.find_all('div', attrs=div_attrs)
-  assert div_tags, 'Failed to find events!!!'
+  assert div_tags, 'ERROR: Failed to find events!!!'
 
   return div_tags
+
+
+def get_link(divs):
+  '''Retrieves a URL to the non-empty setlist of
+     the latest event.
+
+  Args:
+    divs (list): A list containing the div tag
+         contents corresponding to the artist's
+         events.
+
+  Returns:
+    A URL to a non-empty setlist.
+
+  Raises:
+    AssertionError: If there are no non-empty setlists.
+  '''
+
+  ol_attr = {'class': 'list-inline'}
+  for div in divs:
+    if div.find('ol', attrs=ol_attr):
+      return div.a['href']
+
+  assert None, 'ERROR: Failed to find non-empty setlists!!!'

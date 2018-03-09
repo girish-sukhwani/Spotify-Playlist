@@ -1,3 +1,5 @@
+_public = False
+
 _intro = '''\n\nPlease enter the requested information below.\n
 NOTE:\n
 1. If you haven't already done so, setup a developer account by
@@ -9,6 +11,7 @@ playlist is http://localhost:8888/callback. You can provide an
 alternate URL below or just press ENTER to use the default URL.\n
 3. The input for Client ID and Client Secret is hidden. So, don't
 be alarmed if you see no text showing up.\n\n'''
+
 
 def generate_playlist(songs, pname='py_playlist'):
   '''Reads in a list of songs and generates a link to a
@@ -33,7 +36,14 @@ def generate_playlist(songs, pname='py_playlist'):
                                    user_data['redirect_url'])
 
   tracks = get_track_ids(api_connect, songs)
-  return tracks
+
+  if user_data['scope'] == 'playlist-modify-public':
+    _public = True
+
+  playlist_url = construct_playlist(api_connect, pname, tracks,
+                                    user_data['username'], _public)
+
+  return playlist_url
 
 
 def get_user_info():
@@ -130,3 +140,30 @@ def get_track_ids(spotify, songs):
         break
 
   return track_ids
+
+
+def construct_playlist(spotify, pname, tracks,
+                       username, public=False):
+  '''Creates a Spotify playlist and adds tracks to the playlist and 
+     returns the link to the playlist.
+
+  Args:
+    spotify: A Spotify connection object.
+    pname (string): A string representing the name of the playlist.
+    tracks (list): A list of strings containing the ids of the tracks.
+    username (string): A string containing the Spotify username.
+    public (boolean): A boolean value representing whether the
+                      playlist is public or not.
+
+  Returns:
+    A link to the created Spotify playlist.
+  '''
+
+  playlist = spotify.user_playlist_create(username,
+                                          pname,
+                                          public=public)
+  plist_id = playlist['id']
+  plist_url = playlist['external_urls']['spotify']
+  spotify.user_playlist_add_tracks(username, plist_id, tracks)
+
+  return plist_url

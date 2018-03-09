@@ -24,17 +24,6 @@ This module contains functions to read a list of songs returned from **scrape.py
 ### Module 3: build_playlist.py
 This module contains functions to call the **spotify.py** and **scrape.py** modules to create a playlist on Spotify containing the latest songs by the artist, and prints a link to the playlist.
 
-
-## Softwares and Libraries
-This project uses the following softwares and Python libraries:
-
-- Software-1
-- Software-2
-- and so on...
-
-If you do not have Python installed yet, it is highly recommended that you install the [Anaconda](https://www.anaconda.com/download/) distribution of Python, which already has the above packages and more included. Make sure you select the Python 3.x installer and not the Python 2.7 installer.
-
-
 ## Running the Project
 To successfully run the app and create a playlist, use the following command and enter all the requested details correctly:
 

@@ -28,25 +28,25 @@ def generate_playlist(songs, pname='py_playlist'):
     containing the specified songs.
   '''
 
-  user_data = get_user_info()
-  api_connect = get_api_connection(user_data['username'],
-                                   user_data['scope'],
-                                   user_data['client_id'],
-                                   user_data['client_secret'],
-                                   user_data['redirect_url'])
+  user_data = _get_user_info()
+  api_connect = _get_api_connection(user_data['username'],
+                                    user_data['scope'],
+                                    user_data['client_id'],
+                                    user_data['client_secret'],
+                                    user_data['redirect_url'])
 
-  tracks = get_track_ids(api_connect, songs)
+  tracks = _get_track_ids(api_connect, songs)
 
   if user_data['scope'] == 'playlist-modify-public':
     _public = True
 
-  playlist_url = construct_playlist(api_connect, pname, tracks,
-                                    user_data['username'], _public)
+  playlist_url = _construct_playlist(api_connect, pname, tracks,
+                                     user_data['username'], _public)
 
   return playlist_url
 
 
-def get_user_info():
+def _get_user_info():
   '''Prompts the user for input data required to connect
      to the `spotipy` API and returns the data as a python
      dictionaty.
@@ -88,7 +88,7 @@ def get_user_info():
   return user_info
 
 
-def get_api_connection(username, scope, client_id,
+def _get_api_connection(username, scope, client_id,
                        client_secret, redirect_uri):
   '''Connects to the spotipy api and returns the Spotify object.
 
@@ -121,7 +121,7 @@ def get_api_connection(username, scope, client_id,
   return spot_obj
 
 
-def get_track_ids(spotify, songs):
+def _get_track_ids(spotify, songs):
   '''Searches spotify for the songs and returns their track ids.
 
   Args:
@@ -142,7 +142,7 @@ def get_track_ids(spotify, songs):
   return track_ids
 
 
-def construct_playlist(spotify, pname, tracks,
+def _construct_playlist(spotify, pname, tracks,
                        username, public=False):
   '''Creates a Spotify playlist and adds tracks to the playlist and 
      returns the link to the playlist.

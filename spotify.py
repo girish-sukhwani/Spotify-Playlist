@@ -32,7 +32,8 @@ def generate_playlist(songs, pname='py_playlist'):
                                    user_data['client_secret'],
                                    user_data['redirect_url'])
 
-  return ''
+  tracks = get_track_ids(api_connect, songs)
+  return tracks
 
 
 def get_user_info():
@@ -108,3 +109,24 @@ def get_api_connection(username, scope, client_id,
   spot_obj = Spotify(auth=token)
 
   return spot_obj
+
+
+def get_track_ids(spotify, songs):
+  '''Searches spotify for the songs and returns their track ids.
+
+  Args:
+    spotify: A Spotify connection object.
+    songs (list): A list of strings containing the names of the songs.
+
+  Returns:
+    A list of strings containing the track ids of the songs.
+  '''
+
+  track_ids = []
+  for song in songs:
+    for track in spotify.search('track:' + song)['tracks']['items']:
+      if song in track['name']:
+        track_ids.append(track['id'])
+        break
+
+  return track_ids

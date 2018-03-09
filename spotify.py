@@ -1,3 +1,15 @@
+_intro = '''\n\nPlease enter the requested information below.\n
+NOTE:\n
+1. If you haven't already done so, setup a developer account by
+going to https://developer.spotify.com/ and create an app to
+get the Client ID and the Client Secret to authorize this
+application to create and modify a playlist using your account.\n
+2. Also, the default URL where you can view and listen to your
+playlist is http://localhost:8888/callback. You can provide an
+alternate URL below or just press ENTER to use the default URL.\n
+3. The input for Client ID and Client Secret is hidden. So, don't
+be alarmed if you see no text showing up.\n\n'''
+
 def generate_playlist(songs, pname='py_playlist'):
   '''Reads in a list of songs and generates a link to a
      Spotify playlist.
@@ -14,7 +26,11 @@ def generate_playlist(songs, pname='py_playlist'):
   '''
 
   user_data = get_user_info()
-  print(user_data)
+  api_connect = get_api_connection(user_data['username'],
+                                   user_data['scope'],
+                                   user_data['client_id'],
+                                   user_data['client_secret'],
+                                   user_data['redirect_url'])
 
   return ''
 
@@ -30,22 +46,14 @@ def get_user_info():
     playlist.
   '''
 
+  from getpass import getpass
+
   user_info = {}
-  print('\n\nPlease enter the requested information below.\n\n'
-        'NOTE:\n\n'
-        "1. If you haven't already done so, setup a developer\n"
-        'account by going to https://developer.spotify.com/\n'
-        'and create an app to get the Client ID and the\n'
-        'Client Secret to authorize this application to\n'
-        'create and modify a playlist using your account.\n\n'
-        '2. Also, the default URL where you can view and listen\n'
-        'to your playlist is http://localhost:8888/callback.\n'
-        'You can provide an alternative URL below or just\n'
-        'press ENTER to use the default URL.\n\n')
+  print(_intro)
 
   user_info['username'] = input('Enter Spotify Username: ')
-  user_info['client_id'] = input('Enter the Client ID: ')
-  user_info['client_secret'] = input('Enter the Client Secret: ')
+  user_info['client_id'] = getpass('Enter the Client ID: ')
+  user_info['client_secret'] = getpass('Enter the Client Secret: ')
 
   redirect_url = input('Enter the URL to access the playlist or'
                        ' press ENTER to use the default URL: ')
@@ -53,11 +61,11 @@ def get_user_info():
     redirect_url = 'http://localhost:8888/callback'
   user_info['redirect_url'] = redirect_url
 
-  scope_option = int(input('Please choose one of the options '
+  scope_option = int(input('\nPlease choose one of the options '
                            'for the kind of playlist you want'
                            ' to create.\n\n1. Public\n2. Private'
                            '\n\nEnter the number corresponding to'
-                           ' the option you want to choose:')
+                           ' the option you want to choose: ')
                            .strip())
   scope_dict = {1: 'playlist-modify-public',
                 2: 'playlist-modify-private'}
@@ -67,3 +75,36 @@ def get_user_info():
   user_info['scope'] = scope_dict[scope_option]
 
   return user_info
+
+
+def get_api_connection(username, scope, client_id,
+                       client_secret, redirect_uri):
+  '''Connects to the spotipy api and returns the Spotify object.
+
+  Args:
+    username (string): A string containing the Spotify username.
+    scope (string): A string containing scope identifier for access.
+    client_id (string): A string containing the client_id.
+    client_secret (string): A string containing the client_secret.
+    redirect_uri (string): A string containing the redirect URI.
+
+  Return:
+    A Spotify object after completing authentication.
+  '''
+
+  from time import sleep
+  from spotipy import util
+  from spotipy import Spotify
+
+  print('\n\nAfter you authorize the application to allow it to'
+        ' make changes, you will be asked to copy the URL that '
+        'you are redirected to and paste it on the screen here.')
+  sleep(10)
+  token = util.prompt_for_user_token(username,
+                                     scope=scope,
+                                     client_id=client_id,
+                                     client_secret=client_secret,
+                                     redirect_uri=redirect_uri)
+  spot_obj = Spotify(auth=token)
+
+  return spot_obj

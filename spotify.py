@@ -13,7 +13,7 @@ alternate URL below or just press ENTER to use the default URL.\n
 be alarmed if you see no text showing up.\n\n'''
 
 
-def generate_playlist(songs, pname='py_playlist'):
+def generate_playlist(songs, pname):
   '''Reads in a list of songs and generates a link to a
      Spotify playlist.
 
@@ -21,7 +21,7 @@ def generate_playlist(songs, pname='py_playlist'):
     songs (list): A list of strings containing the names
           of the songs.
     pname (string): A string conatining the name of the
-          playlist to be created (default = 'py_playlist').
+          playlist to be created.
 
   Returns:
     A string containing the URL to the Spotify playlist

@@ -5,10 +5,12 @@ going to https://developer.spotify.com/ and create an app to
 get the Client ID and the Client Secret to authorize this
 application to create and modify a playlist using your account.\n
 2. Also, the default URL where you can view and listen to your
-playlist is http://localhost:8888/callback. You can provide an
+playlist is http://localhost:7777/pyplay. You can provide an
 alternate URL below or just press ENTER to use the default URL.\n
 3. The input for Client ID and Client Secret is hidden. So, don't
-be alarmed if you see no text showing up.\n\n'''
+be alarmed if you see no text showing up.\n
+4. Remember to add the redirect URL to the app you created using
+your developer account./n/n'''
 
 
 def generate_playlist(songs, pname):

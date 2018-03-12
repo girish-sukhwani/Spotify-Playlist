@@ -1,5 +1,3 @@
-_public = False
-
 _intro = '''\n\nPlease enter the requested information below.\n
 NOTE:\n
 1. If you haven't already done so, setup a developer account by
@@ -37,6 +35,7 @@ def generate_playlist(songs, pname):
 
   tracks = _get_track_ids(api_connect, songs)
 
+  _public = False
   if user_data['scope'] == 'playlist-modify-public':
     _public = True
 
@@ -69,7 +68,7 @@ def _get_user_info():
   redirect_url = input('Enter the URL to access the playlist or'
                        ' press ENTER to use the default URL: ')
   if redirect_url == '':
-    redirect_url = 'http://localhost:8888/callback'
+    redirect_url = 'http://localhost:7777/pyplay'
   user_info['redirect_url'] = redirect_url
 
   scope_option = int(input('\nPlease choose one of the options '
